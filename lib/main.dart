@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:sliver_inspector/sliver_ignore_bouncing.dart';
+import 'package:sliver_inspector/sliver_pinned_top.dart';
 import 'package:sliver_inspector/sliver_to_box_adapter.dart';
 
 import 'inspect_dashboard.dart';
@@ -57,10 +60,11 @@ class _HomePageState extends State<HomePage> {
                   onGeometry: (value) {
                     controller.setGeometry('red', value);
                   },
-                  child: TextBox.red(),
+                  child: TextBox.red(height: 150,),
                 ),
-                ...List.filled(7, LogSliverToBoxAdapter(child: TextBox())),
-                // ...List.filled(10, LogSliverToBoxAdapter(child: TextBox())),
+                SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(height: index  <25 ? 100 : Random().nextInt(100).toDouble()),childCount: 1000)),
+                // SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(),childCount: 50)),
+                // ...List.filled(100, LogSliverToBoxAdapter(child: TextBox())),
                 SliverIgnoreTopBouncing(
                   onConstraints: (value) {
                     controller.setConstraints('green', value);
@@ -70,6 +74,9 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: TextBox.green(),
                 ),
+
+                // ...List.filled(10, LogSliverToBoxAdapter(child: TextBox())),
+
                 //...List.filled(1, LogSliverToBoxAdapter(child: TextBox())),
               ],
             ),

@@ -1,47 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'post_frame_builder.dart';
 import 'render_sliver_logger_mixin.dart';
 
-class InspectDashboard extends StatefulWidget {
+class InspectDashboard extends StatelessWidget {
   const InspectDashboard({super.key, required this.controller});
 
   final InspectDashboardController controller;
+  
+  Map<String, SliverConstraints> get constraints => controller._constraints;
 
-  @override
-  State<InspectDashboard> createState() => InspectDashboardState();
-}
+  Map<String, SliverGeometry> get geometry => controller._geometry;
 
-class InspectDashboardState extends State<InspectDashboard> {
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(_update);
-  }
-
-  void _update() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant InspectDashboard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_update);
-      widget.controller.addListener(_update);
-    }
-  }
-
-  Map<String, SliverConstraints> get constraints => widget.controller._constraints;
-
-  Map<String, SliverGeometry> get geometry => widget.controller._geometry;
-
-  Set<String> get tags => widget.controller._tags;
+  Set<String> get tags => controller._tags;
 
   Iterable<String> get visibleTags => tags.where(((element) {
-        return !widget.controller._hidedTags.contains(element);
+        return !controller._hidedTags.contains(element);
       }));
 
   Map<String, String> constraintsFor(String tag) => constraints[tag]?.table ?? {};
@@ -51,20 +26,26 @@ class InspectDashboardState extends State<InspectDashboard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListView(
-      children: [
-        for (final tag in visibleTags) ...[
-          Text(tag, style: theme.textTheme.headline5),
-          _Table(
-            name: 'SliverConstraints',
-            data: constraintsFor(tag),
-          ),
-          _Table(
-            name: 'SliverGeometry',
-            data: geometryFor(tag),
-          )
-        ],
-      ],
+    // AnimatedBuilder
+    return PostFrameBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        return ListView(
+          children: [
+            for (final tag in visibleTags) ...[
+              Text(tag, style: theme.textTheme.headline5),
+              _Table(
+                name: 'SliverConstraints',
+                data: constraintsFor(tag),
+              ),
+              _Table(
+                name: 'SliverGeometry',
+                data: geometryFor(tag),
+              )
+            ],
+          ],
+        );
+      }
     );
   }
 }

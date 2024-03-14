@@ -61,9 +61,9 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: TextBox.red(height: 150,),
                 ),
-                SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(height: index  <25 ? 100 : Random().nextInt(100).toDouble()),childCount: 1000)),
+                // SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(height: index  <25 ? 100 : Random().nextInt(100).toDouble()),childCount: 1000)),
                 // SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(),childCount: 50)),
-                // ...List.filled(100, LogSliverToBoxAdapter(child: TextBox())),
+                ...List.filled(10, LogSliverToBoxAdapter(child: TextBox())),
                 SliverIgnoreTopBouncing(
                   onConstraints: (value) {
                     controller.setConstraints('green', value);

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'inspect_dashboard.dart';
 import 'render_sliver_logger_mixin.dart';
-import 'sliver_fill_remaining.dart';
-import 'sliver_ignore_bouncing.dart';
+import 'slivers/sliver_fill_remaining.dart';
+import 'slivers/sliver_ignore_bouncing.dart';
 
 void main() {
   runApp(const MyApp());
@@ -76,9 +76,8 @@ class _HomePageState extends State<HomePage> {
                   child: LogSliverFillRemaining(
                     hasScrollBody: false,
                     fillOverscroll: true,
-                    child: ColoredBox(
-                      color: Colors.red,
-                      child: SizedBox.expand(),
+                    child: SizedBox.expand(
+                      child: TextBox.green(),
                     ),
                   ),
                 ),

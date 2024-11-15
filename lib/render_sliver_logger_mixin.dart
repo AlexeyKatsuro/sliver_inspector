@@ -1,21 +1,45 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 
-mixin RenderSliverLoggerMixin on RenderSliver {
-  ValueChanged<SliverConstraints>? get onConstraints;
+abstract class SliverNotification extends Notification {}
 
-  ValueChanged<SliverGeometry>? get onGeometry;
+class SliverConstraintsNotification extends SliverNotification {
+  final SliverConstraints constraints;
+
+  SliverConstraintsNotification(this.constraints);
+}
+
+class SliverGeometryNotification extends SliverNotification {
+  final SliverGeometry sliverGeometry;
+
+  SliverGeometryNotification(this.sliverGeometry);
+}
+
+mixin RenderSliverLoggerMixin on RenderSliver {
+  BuildContext get context;
+
+  void dispatchSliverConstraints() {
+    SliverConstraintsNotification(constraints).dispatch(context);
+  }
+
+  void dispatchSliverGeometry() {
+
+    if (geometry case final geometry?) {
+      SliverGeometryNotification(geometry).dispatch(context);
+    }
+  }
 
   @override
   void performLayout() {
-    onConstraints?.call(constraints);
+    dispatchSliverConstraints();
     super.performLayout();
-    onGeometry?.call(geometry!);
+    dispatchSliverGeometry();
   }
 }
 
 const fractionDigits = 2;
-extension SliverConstraintsExt on SliverConstraints {
 
+extension SliverConstraintsExt on SliverConstraints {
   Map<String, String> get table {
     return {
       'scrollOffset': scrollOffset.toStringAsFixed(fractionDigits),
@@ -34,7 +58,6 @@ extension SliverConstraintsExt on SliverConstraints {
   }
 }
 
-
 extension SliverGeometryExt on SliverGeometry {
   Map<String, String> get table {
     return {
@@ -51,4 +74,26 @@ extension SliverGeometryExt on SliverGeometry {
       'hasVisualOverflow': hasVisualOverflow.toString(),
     };
   }
+}
+
+class SliverNotificationListener extends NotificationListener<SliverNotification> {
+  SliverNotificationListener({
+    super.key,
+    required super.child,
+    ValueChanged<SliverConstraints>? onConstraints,
+    ValueChanged<SliverGeometry>? onGeometry,
+  }) : super(
+          onNotification: (notification) {
+            switch (notification) {
+              case SliverConstraintsNotification():
+                onConstraints?.call(notification.constraints);
+                return onConstraints != null;
+              case SliverGeometryNotification():
+                onGeometry?.call(notification.sliverGeometry);
+                return onGeometry != null;
+              default:
+                return false;
+            }
+          },
+        );
 }

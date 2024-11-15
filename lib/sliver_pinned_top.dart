@@ -17,21 +17,12 @@ class LogSliverPinnedHeader extends SliverPinnedHeader {
 
   @override
   RenderSliverPinnedHeader createRenderObject(BuildContext context) =>
-      LogRenderSliverToBoxAdapter(onConstraints, onGeometry);
+      LogRenderSliverPinnedHeader(context);
 }
 
-class LogRenderSliverToBoxAdapter extends RenderSliverPinnedHeader with RenderSliverLoggerMixin {
-  /// Creates a [RenderSliver] that wraps a [RenderBox].
-  LogRenderSliverToBoxAdapter(this.onConstraints, this.onGeometry);
+class LogRenderSliverPinnedHeader extends RenderSliverPinnedHeader with RenderSliverLoggerMixin {
+  LogRenderSliverPinnedHeader(this.context);
 
   @override
-  final ValueChanged<SliverConstraints>? onConstraints;
-  @override
-  final ValueChanged<SliverGeometry>? onGeometry;
-
-  @override
-  void performLayout() {
-    super.performLayout();
-    setChildParentData(child!, constraints, geometry!);
-  }
+  final BuildContext context;
 }

@@ -7,29 +7,21 @@ class LogSliverToBoxAdapter extends SliverToBoxAdapter {
   const LogSliverToBoxAdapter({
     super.key,
     super.child,
-    this.onConstraints,
-    this.onGeometry,
   });
 
-  final ValueChanged<SliverConstraints>? onConstraints;
-  final ValueChanged<SliverGeometry>? onGeometry;
 
   @override
   RenderSliverToBoxAdapter createRenderObject(BuildContext context) =>
-      LogRenderSliverToBoxAdapter(onConstraints, onGeometry);
+      LogRenderSliverToBoxAdapter(context);
 }
 
 class LogRenderSliverToBoxAdapter extends RenderSliverToBoxAdapter with RenderSliverLoggerMixin {
   /// Creates a [RenderSliver] that wraps a [RenderBox].
   LogRenderSliverToBoxAdapter(
-    this.onConstraints,
-    this.onGeometry, {
+    this.context, {
     super.child,
   });
 
   @override
-  final ValueChanged<SliverConstraints>? onConstraints;
-  @override
-  final ValueChanged<SliverGeometry>? onGeometry;
-
+  final BuildContext context;
 }

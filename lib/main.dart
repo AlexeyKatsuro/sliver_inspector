@@ -1,11 +1,9 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:sliver_inspector/sliver_ignore_bouncing.dart';
-import 'package:sliver_inspector/sliver_pinned_top.dart';
-import 'package:sliver_inspector/sliver_to_box_adapter.dart';
 
 import 'inspect_dashboard.dart';
+import 'render_sliver_logger_mixin.dart';
+import 'sliver_fill_remaining.dart';
+import 'sliver_ignore_bouncing.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,26 +50,37 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                SliverIgnoreTopBouncing(
+                SliverNotificationListener(
                   onConstraints: (value) {
                     controller.setConstraints('red', value);
                   },
                   onGeometry: (value) {
                     controller.setGeometry('red', value);
                   },
-                  child: TextBox.red(height: 150,),
+                  child: SliverIgnoreTopBouncing(
+                    child: TextBox.red(
+                      height: 150,
+                    ),
+                  ),
                 ),
                 // SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(height: index  <25 ? 100 : Random().nextInt(100).toDouble()),childCount: 1000)),
                 // SliverList(delegate: SliverChildBuilderDelegate((context, index) => TextBox(),childCount: 50)),
-                ...List.filled(10, LogSliverToBoxAdapter(child: TextBox())),
-                SliverIgnoreTopBouncing(
+                ...List.filled(10, SliverToBoxAdapter(child: TextBox())),
+                SliverNotificationListener(
                   onConstraints: (value) {
                     controller.setConstraints('green', value);
                   },
                   onGeometry: (value) {
                     controller.setGeometry('green', value);
                   },
-                  child: TextBox.green(),
+                  child: LogSliverFillRemaining(
+                    hasScrollBody: false,
+                    fillOverscroll: true,
+                    child: ColoredBox(
+                      color: Colors.red,
+                      child: SizedBox.expand(),
+                    ),
+                  ),
                 ),
 
                 // ...List.filled(10, LogSliverToBoxAdapter(child: TextBox())),

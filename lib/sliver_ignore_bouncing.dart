@@ -2,35 +2,26 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sliver_inspector/render_sliver_logger_mixin.dart';
 
-
 class SliverIgnoreTopBouncing extends SliverToBoxAdapter {
   const SliverIgnoreTopBouncing({
     super.key,
     super.child,
-    this.onConstraints,
-    this.onGeometry,
   });
-
-  final ValueChanged<SliverConstraints>? onConstraints;
-  final ValueChanged<SliverGeometry>? onGeometry;
 
   @override
   RenderSliverToBoxAdapter createRenderObject(BuildContext context) =>
-      LogRenderSliverToBoxAdapter(onConstraints, onGeometry);
+      LogRenderSliverIgnoreTopBouncing(context);
 }
 
-class LogRenderSliverToBoxAdapter extends RenderSliverToBoxAdapter with RenderSliverLoggerMixin {
-  /// Creates a [RenderSliver] that wraps a [RenderBox].
-  LogRenderSliverToBoxAdapter(
-    this.onConstraints,
-    this.onGeometry, {
+class LogRenderSliverIgnoreTopBouncing extends RenderSliverToBoxAdapter
+    with RenderSliverLoggerMixin {
+  LogRenderSliverIgnoreTopBouncing(
+    this.context, {
     super.child,
   });
 
   @override
-  final ValueChanged<SliverConstraints>? onConstraints;
-  @override
-  final ValueChanged<SliverGeometry>? onGeometry;
+  final BuildContext context;
 
   @override
   void performLayout() {
@@ -40,7 +31,7 @@ class LogRenderSliverToBoxAdapter extends RenderSliverToBoxAdapter with RenderSl
     }
 
     final SliverConstraints constraints = this.constraints;
-    onConstraints?.call(constraints);
+    dispatchSliverConstraints();
     child!.layout(constraints.asBoxConstraints(), parentUsesSize: true);
     final double childExtent;
     switch (constraints.axis) {
@@ -51,7 +42,6 @@ class LogRenderSliverToBoxAdapter extends RenderSliverToBoxAdapter with RenderSl
         childExtent = child!.size.height;
         break;
     }
-    assert(childExtent != null);
     final double paintedChildSize = calculatePaintOffset(constraints, from: 0.0, to: childExtent);
     final double cacheExtent = calculateCacheOffset(constraints, from: 0.0, to: childExtent);
 
@@ -67,7 +57,7 @@ class LogRenderSliverToBoxAdapter extends RenderSliverToBoxAdapter with RenderSl
       hasVisualOverflow:
           childExtent > constraints.remainingPaintExtent || constraints.scrollOffset > 0.0,
     );
-    onGeometry?.call(geometry!);
+    dispatchSliverGeometry();
     setChildParentData(child!, constraints, geometry!);
   }
 }

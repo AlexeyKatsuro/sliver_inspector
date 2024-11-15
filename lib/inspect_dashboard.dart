@@ -33,7 +33,7 @@ class InspectDashboard extends StatelessWidget {
         return ListView(
           children: [
             for (final tag in visibleTags) ...[
-              Text(tag, style: theme.textTheme.headline5),
+              Text(tag, style: theme.textTheme.headlineMedium),
               _Table(
                 name: 'SliverConstraints',
                 data: constraintsFor(tag),
